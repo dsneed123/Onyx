@@ -1,0 +1,15 @@
+{
+  "name": "onyx",
+  "version": "1.0.0",
+  "description": "Social media app with Snapchat-like features",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "setup:db": "cd backend && npm run db:setup",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "keywords": ["social-media", "snapchat", "react", "nodejs", "postgresql"],
+  "author": "",
+  "license": "MIT"
+}
