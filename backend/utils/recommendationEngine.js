@@ -58,7 +58,7 @@ export async function getRecommendedStories(userId, limit = 20) {
          JOIN users u ON s.user_id = u.id
          LEFT JOIN story_tags st ON s.id = st.story_id
          LEFT JOIN tags t ON st.tag_id = t.id
-         WHERE (s.expires_at > CURRENT_TIMESTAMP OR s.is_permanent = TRUE)
+         WHERE s.expires_at > CURRENT_TIMESTAMP
            AND s.user_id != $1
            AND NOT EXISTS (
              SELECT 1 FROM story_views sv
@@ -83,7 +83,7 @@ export async function getRecommendedStories(userId, limit = 20) {
        LEFT JOIN story_tags st ON s.id = st.story_id
        LEFT JOIN tags t ON st.tag_id = t.id
        LEFT JOIN user_interests ui ON ui.tag_id = st.tag_id AND ui.user_id = $1
-       WHERE (s.expires_at > CURRENT_TIMESTAMP OR s.is_permanent = TRUE)
+       WHERE s.expires_at > CURRENT_TIMESTAMP
          AND s.user_id != $1
          AND NOT EXISTS (
            SELECT 1 FROM story_views sv
