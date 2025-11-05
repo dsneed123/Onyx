@@ -46,7 +46,13 @@ A modern social media application inspired by Snapchat, featuring snaps, stories
 
 ## Setup Instructions
 
-### Prerequisites
+### Quick Deployment to Render.com
+
+For production deployment, see [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for step-by-step instructions to deploy to Render.com (free tier available).
+
+### Local Development Setup
+
+#### Prerequisites
 - Node.js (v18+)
 - PostgreSQL (v14+)
 - npm or yarn
