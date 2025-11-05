@@ -80,8 +80,9 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
       }
 
       // Create story with text and/or media
+      const apiBaseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000';
       await stories.create({
-        mediaUrl: mediaUrl ? `http://localhost:3000${mediaUrl}` : null,
+        mediaUrl: mediaUrl ? `${apiBaseUrl}${mediaUrl}` : null,
         text: text || '',
         textOverlay: text && mediaFile ? {
           text,

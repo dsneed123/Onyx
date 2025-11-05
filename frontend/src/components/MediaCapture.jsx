@@ -27,6 +27,7 @@ export default function MediaCapture({ onCapture, onClose, autoOpen = false, mod
 
   const startCamera = async () => {
     try {
+      console.log('Requesting camera access...');
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: facingMode,
@@ -36,13 +37,21 @@ export default function MediaCapture({ onCapture, onClose, autoOpen = false, mod
         audio: mediaType === 'video'
       });
 
+      console.log('Camera access granted!');
       setStream(mediaStream);
+      setError('');
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError('Unable to access camera. Please grant permission.');
+      const errorMessage = err.name === 'NotAllowedError'
+        ? 'Camera permission denied. Please allow camera access in your browser settings.'
+        : err.name === 'NotFoundError'
+        ? 'No camera found on this device.'
+        : 'Unable to access camera. Please check your browser permissions.';
+      setError(errorMessage);
+      alert(errorMessage); // Show alert so user definitely sees it
     }
   };
 
