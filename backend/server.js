@@ -18,12 +18,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Debug logging
+console.log('🔧 Environment Configuration:');
+console.log('PORT:', PORT);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
 // Middleware
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
   optionsSuccessStatus: 200
 };
+console.log('🔒 CORS origin set to:', corsOptions.origin);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
