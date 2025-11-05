@@ -122,16 +122,28 @@ export default function StoriesPanel() {
 
   return (
     <div className="h-full relative bg-gradient-to-br from-onyx-darker to-onyx-dark overflow-hidden">
-      {/* Floating action button */}
-      <button
-        onClick={() => setShowCamera(true)}
-        className="absolute top-4 right-4 z-20 p-4 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full shadow-glow-lg hover:scale-110 active:scale-95 transition-transform duration-200 group animate-bounce-subtle"
-      >
-        <svg className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </button>
+      {/* Floating action buttons */}
+      <div className="absolute top-4 right-4 z-20 flex gap-2">
+        <button
+          onClick={() => setShowTextEditor(true)}
+          className="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full shadow-glow-lg hover:scale-110 active:scale-95 transition-transform duration-200 group"
+          title="Create text story"
+        >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+        <button
+          onClick={() => setShowCamera(true)}
+          className="p-4 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full shadow-glow-lg hover:scale-110 active:scale-95 transition-transform duration-200 group animate-bounce-subtle"
+          title="Create photo/video story"
+        >
+          <svg className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
 
       {/* Progress bar */}
       <div className="absolute top-4 left-4 right-20 z-20">
@@ -187,8 +199,8 @@ export default function StoriesPanel() {
         />
       )}
 
-      {/* Text overlay editor after capture */}
-      {showTextEditor && capturedMedia && (
+      {/* Text overlay editor after capture OR text-only story */}
+      {showTextEditor && (
         <CreateStoryModal
           onClose={() => {
             setShowTextEditor(false);

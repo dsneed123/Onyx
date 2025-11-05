@@ -60,8 +60,8 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!mediaFile) {
-      setError('Please select an image or video');
+    if (!mediaFile && !text) {
+      setError('Please add text or select an image/video');
       return;
     }
 
@@ -70,17 +70,20 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
     setError('');
 
     try {
-      // Upload media file
-      const uploadResponse = await upload.file(mediaFile);
-      const mediaUrl = uploadResponse.data.url;
+      let mediaUrl = null;
 
-      setUploading(false);
+      // Upload media file if present
+      if (mediaFile) {
+        const uploadResponse = await upload.file(mediaFile);
+        mediaUrl = uploadResponse.data.url;
+        setUploading(false);
+      }
 
-      // Create story with text overlay data
+      // Create story with text and/or media
       await stories.create({
-        mediaUrl: `http://localhost:3000${mediaUrl}`,
+        mediaUrl: mediaUrl ? `http://localhost:3000${mediaUrl}` : null,
         text: text || '',
-        textOverlay: text ? {
+        textOverlay: text && mediaFile ? {
           text,
           position: textPosition,
           color: textColor,
@@ -279,7 +282,7 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
             </button>
             <button
               type="submit"
-              disabled={loading || !mediaFile}
+              disabled={loading || (!mediaFile && !text)}
               className="flex-1 px-4 py-3 bg-onyx-accent text-white rounded-lg hover:bg-onyx-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? 'Uploading...' : loading ? 'Creating...' : 'Create Story'}
