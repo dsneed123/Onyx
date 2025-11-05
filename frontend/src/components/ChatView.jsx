@@ -75,11 +75,12 @@ export default function ChatView({ friend, onBack }) {
       // Upload file
       const uploadResponse = await upload.file(file);
       const mediaUrl = uploadResponse.data.url;
+      const apiBaseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000';
 
       // Send snap with media
       await snaps.send({
         receiverId: friend.id,
-        mediaUrl: `http://localhost:3000${mediaUrl}`,
+        mediaUrl: `${apiBaseUrl}${mediaUrl}`,
         text: type === 'photo' ? '📸 Photo' : '🎥 Video'
       });
 
@@ -100,10 +101,11 @@ export default function ChatView({ friend, onBack }) {
       const uploadResponse = await upload.file(file);
       const mediaUrl = uploadResponse.data.url;
       const type = file.type.startsWith('video') ? 'video' : 'photo';
+      const apiBaseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000';
 
       await snaps.send({
         receiverId: friend.id,
-        mediaUrl: `http://localhost:3000${mediaUrl}`,
+        mediaUrl: `${apiBaseUrl}${mediaUrl}`,
         text: type === 'video' ? '🎥 Video' : '📸 Photo'
       });
 
