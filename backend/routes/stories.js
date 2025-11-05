@@ -12,8 +12,8 @@ router.post('/', authenticateToken, async (req, res) => {
     const { text, mediaUrl, textOverlay } = req.body;
     const userId = req.user.id;
 
-    if (!mediaUrl) {
-      return res.status(400).json({ error: 'Story must have media (image or video)' });
+    if (!mediaUrl && !text) {
+      return res.status(400).json({ error: 'Story must have text or media' });
     }
 
     // Extract tags from text
