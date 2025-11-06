@@ -9,6 +9,8 @@ export default function StoryCard({ story, onSwipeLeft, onSwipeRight, swipeDirec
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(story.likes_count || 0);
   const [isLiking, setIsLiking] = useState(false);
+  const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+  const [lastTap, setLastTap] = useState(0);
   const cardRef = useRef(null);
 
   const minSwipeDistance = 50;
@@ -92,7 +94,7 @@ export default function StoryCard({ story, onSwipeLeft, onSwipeRight, swipeDirec
   }, [story.id]);
 
   const handleLike = async (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     if (isLiking) return;
 
     setIsLiking(true);
@@ -105,12 +107,29 @@ export default function StoryCard({ story, onSwipeLeft, onSwipeRight, swipeDirec
         const response = await stories.like(story.id);
         setLiked(true);
         setLikesCount(response.data.likes_count);
+        // Show heart animation
+        setShowHeartAnimation(true);
+        setTimeout(() => setShowHeartAnimation(false), 1000);
       }
     } catch (error) {
       console.error('Error toggling like:', error);
     } finally {
       setIsLiking(false);
     }
+  };
+
+  // Double-tap to like
+  const handleDoubleTap = (e) => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+
+    if (tapLength < 300 && tapLength > 0) {
+      // Double tap detected
+      if (!liked) {
+        handleLike();
+      }
+    }
+    setLastTap(currentTime);
   };
 
   const rotation = dragOffset / 20;
@@ -143,6 +162,7 @@ export default function StoryCard({ story, onSwipeLeft, onSwipeRight, swipeDirec
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       onMouseDown={onMouseDown}
+      onClick={handleDoubleTap}
     >
       {/* Story Content */}
       <div className="h-full flex flex-col relative">
@@ -304,6 +324,15 @@ export default function StoryCard({ story, onSwipeLeft, onSwipeRight, swipeDirec
             <div className="text-6xl animate-bounce-subtle">
               {dragOffset > 0 ? '❤️' : '👎'}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Double-tap heart animation */}
+      {showHeartAnimation && (
+        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+          <div className="text-9xl animate-ping-once opacity-0">
+            ❤️
           </div>
         </div>
       )}

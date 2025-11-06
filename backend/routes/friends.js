@@ -91,6 +91,29 @@ router.delete('/:friendId', authenticateToken, async (req, res) => {
   }
 });
 
+// Get friend recommendations (all users on site)
+router.get('/recommendations', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT u.id, u.username, u.display_name, u.avatar_url,
+              EXISTS(SELECT 1 FROM friendships WHERE user_id = $1 AND friend_id = u.id) as is_friend,
+              u.created_at
+       FROM users u
+       WHERE u.id != $1
+       ORDER BY u.created_at DESC
+       LIMIT 100`,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error getting recommendations:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Search users
 router.get('/search', authenticateToken, async (req, res) => {
   try {

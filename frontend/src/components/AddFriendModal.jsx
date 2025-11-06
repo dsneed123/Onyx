@@ -1,11 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { friends } from '../api';
 
 export default function AddFriendModal({ onClose, onAdded }) {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Load recommendations on mount
+  useEffect(() => {
+    loadRecommendations();
+  }, []);
+
+  const loadRecommendations = async () => {
+    setLoading(true);
+    try {
+      const response = await friends.getRecommendations();
+      setRecommendations(response.data);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to load recommendations');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -81,8 +99,28 @@ export default function AddFriendModal({ onClose, onAdded }) {
           </div>
         )}
 
+        {/* Show recommendations heading */}
+        {!query && recommendations.length > 0 && (
+          <div className="mb-3">
+            <h3 className="text-white font-semibold text-lg">
+              People you may know ({recommendations.length})
+            </h3>
+            <p className="text-gray-400 text-sm">All users on Onyx</p>
+          </div>
+        )}
+
+        {/* Show search results heading when searching */}
+        {query && searchResults.length > 0 && (
+          <div className="mb-3">
+            <h3 className="text-white font-semibold text-lg">
+              Search Results ({searchResults.length})
+            </h3>
+          </div>
+        )}
+
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {searchResults.map((user) => (
+          {/* Show search results if searching, otherwise show recommendations */}
+          {(query ? searchResults : recommendations).map((user) => (
             <div key={user.id} className="bg-onyx-dark rounded-lg p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-onyx-accent flex items-center justify-center text-white font-bold">

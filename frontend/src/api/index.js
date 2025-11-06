@@ -19,6 +19,7 @@ export const friends = {
   addFriend: (friendId) => apiClient.post('/friends', { friendId }),
   removeFriend: (friendId) => apiClient.delete(`/friends/${friendId}`),
   searchUsers: (query) => apiClient.get('/friends/search', { params: { query } }),
+  getRecommendations: () => apiClient.get('/friends/recommendations'),
 };
 
 // Snaps API

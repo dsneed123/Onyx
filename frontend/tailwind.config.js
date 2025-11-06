@@ -28,6 +28,7 @@ export default {
         'scale-in': 'scaleIn 0.2s ease-out',
         'bounce-subtle': 'bounceSubtle 0.5s ease-out',
         'shimmer': 'shimmer 2s linear infinite',
+        'ping-once': 'pingOnce 1s ease-out',
       },
       keyframes: {
         slideUp: {
@@ -53,6 +54,11 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-1000px 0' },
           '100%': { backgroundPosition: '1000px 0' },
+        },
+        pingOnce: {
+          '0%': { transform: 'scale(0.8)', opacity: '0.8' },
+          '50%': { transform: 'scale(1.2)', opacity: '1' },
+          '100%': { transform: 'scale(1.5)', opacity: '0' },
         },
       },
       boxShadow: {
