@@ -110,70 +110,77 @@ export default function StoriesPanel() {
 
   const currentStory = storyFeed[currentIndex];
 
-  if (loading && storyFeed.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 animate-pulse">
-          <div className="w-16 h-16 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full animate-spin">
-            <div className="w-full h-full rounded-full border-4 border-transparent border-t-white"></div>
-          </div>
-          <p className="text-white text-lg">Loading stories...</p>
+  // Render loading state
+  const loadingContent = loading && storyFeed.length === 0 && (
+    <div className="h-full flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 animate-pulse">
+        <div className="w-16 h-16 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full animate-spin">
+          <div className="w-full h-full rounded-full border-4 border-transparent border-t-white"></div>
         </div>
+        <p className="text-white text-lg">Loading stories...</p>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (storyFeed.length === 0) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-        <div className="glass p-12 rounded-3xl max-w-md">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full flex items-center justify-center animate-bounce-subtle">
-            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 className="text-white text-3xl font-bold mb-3">No Stories Yet</h2>
-          <p className="text-gray-400 mb-6 text-lg">Be the first to share something amazing!</p>
-          <button
-            onClick={() => setShowCamera(true)}
-            className="btn-primary px-8 py-4 bg-gradient-to-r from-onyx-accent to-onyx-purple hover:from-onyx-accent-dark hover:to-purple-600 text-white rounded-xl font-semibold shadow-glow transition-all duration-300"
-          >
-            Create Your First Story
-          </button>
+  // Render empty state
+  const emptyContent = !loading && storyFeed.length === 0 && (
+    <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+      <div className="glass p-12 rounded-3xl max-w-md">
+        <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-onyx-accent to-onyx-purple rounded-full flex items-center justify-center animate-bounce-subtle">
+          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
         </div>
+        <h2 className="text-white text-3xl font-bold mb-3">No Stories Yet</h2>
+        <p className="text-gray-400 mb-6 text-lg">Be the first to share something amazing!</p>
+        <button
+          onClick={() => setShowCamera(true)}
+          className="btn-primary px-8 py-4 bg-gradient-to-r from-onyx-accent to-onyx-purple hover:from-onyx-accent-dark hover:to-purple-600 text-white rounded-xl font-semibold shadow-glow transition-all duration-300"
+        >
+          Create Your First Story
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (currentIndex >= storyFeed.length) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-        <div className="glass p-12 rounded-3xl max-w-md">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center animate-scale-in">
-            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h2 className="text-white text-3xl font-bold mb-3">All Caught Up!</h2>
-          <p className="text-gray-400 mb-6 text-lg">You've seen all the stories for now</p>
-          <button
-            onClick={() => {
-              setCurrentIndex(0);
-              loadStories();
-            }}
-            className="btn-primary px-8 py-4 bg-gradient-to-r from-onyx-purple to-onyx-cyan hover:from-purple-600 hover:to-cyan-600 text-white rounded-xl font-semibold shadow-glow transition-all duration-300"
-          >
-            Refresh Feed
-          </button>
+  // Render caught up state
+  const caughtUpContent = !loading && storyFeed.length > 0 && currentIndex >= storyFeed.length && (
+    <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+      <div className="glass p-12 rounded-3xl max-w-md">
+        <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center animate-scale-in">
+          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
+        <h2 className="text-white text-3xl font-bold mb-3">All Caught Up!</h2>
+        <p className="text-gray-400 mb-6 text-lg">You've seen all the stories for now</p>
+        <button
+          onClick={() => {
+            setCurrentIndex(0);
+            loadStories();
+          }}
+          className="btn-primary px-8 py-4 bg-gradient-to-r from-onyx-purple to-onyx-cyan hover:from-purple-600 hover:to-cyan-600 text-white rounded-xl font-semibold shadow-glow transition-all duration-300"
+        >
+          Refresh Feed
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
+
+  const currentStory = storyFeed[currentIndex];
 
   return (
     <div className="h-full relative bg-gradient-to-br from-onyx-darker to-onyx-dark overflow-hidden">
-      {/* Floating action buttons */}
-      <div className="absolute top-4 right-4 z-20 flex gap-2">
+      {/* Render appropriate content based on state */}
+      {loadingContent}
+      {emptyContent}
+      {caughtUpContent}
+
+      {/* Show story UI only when we have stories and haven't finished */}
+      {!loading && storyFeed.length > 0 && currentIndex < storyFeed.length && (
+        <>
+          {/* Floating action buttons */}
+          <div className="absolute top-4 right-4 z-20 flex gap-2">
         <button
           onClick={() => setShowTutorial(true)}
           className="p-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full shadow-glow-lg hover:scale-110 active:scale-95 transition-transform duration-200"
@@ -248,8 +255,10 @@ export default function StoriesPanel() {
           </div>
         </div>
       </div>
+        </>
+      )}
 
-      {/* Camera for capturing media */}
+      {/* Camera for capturing media - Always available */}
       {showCamera && (
         <MediaCapture
           onCapture={handleMediaCapture}
