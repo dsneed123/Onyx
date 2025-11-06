@@ -10,6 +10,7 @@ import friendRoutes from './routes/friends.js';
 import snapRoutes from './routes/snaps.js';
 import storyRoutes from './routes/stories.js';
 import uploadRoutes from './routes/upload.js';
+import { runAutoMigration } from './db/auto-migrate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,7 +79,18 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Onyx backend server running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+// Start server with auto-migration
+async function startServer() {
+  // Run auto-migration on startup
+  await runAutoMigration();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Onyx backend server running on port ${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+  });
+}
+
+startServer().catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
