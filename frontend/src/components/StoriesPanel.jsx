@@ -167,8 +167,6 @@ export default function StoriesPanel() {
     </div>
   );
 
-  const currentStory = storyFeed[currentIndex];
-
   return (
     <div className="h-full relative bg-gradient-to-br from-onyx-darker to-onyx-dark overflow-hidden">
       {/* Render appropriate content based on state */}
