@@ -108,7 +108,7 @@ export default function MediaCapture({ onCapture, onClose, autoOpen = false, mod
     setIsRecording(true);
     setRecordingTime(0);
 
-    // Start timer
+    // Start timer (1 minute max for Onyx)
     timerRef.current = setInterval(() => {
       setRecordingTime(prev => {
         if (prev >= 60) {
@@ -189,12 +189,40 @@ export default function MediaCapture({ onCapture, onClose, autoOpen = false, mod
               </div>
             )}
 
-            {/* Recording Timer */}
+            {/* Recording Timer with Progress */}
             {isRecording && (
-              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 animate-pulse">
+              <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
                 <div className="glass px-6 py-3 rounded-full flex items-center gap-3">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-white font-bold text-lg">{formatTime(recordingTime)}</span>
+                  <div className="relative w-5 h-5">
+                    {/* Progress Circle */}
+                    <svg className="transform -rotate-90" width="20" height="20">
+                      <circle
+                        cx="10"
+                        cy="10"
+                        r="8"
+                        stroke="white"
+                        strokeWidth="2"
+                        fill="none"
+                        opacity="0.2"
+                      />
+                      <circle
+                        cx="10"
+                        cy="10"
+                        r="8"
+                        stroke="#ef4444"
+                        strokeWidth="2"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 8}`}
+                        strokeDashoffset={`${2 * Math.PI * 8 * (1 - recordingTime / 60)}`}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <span className="text-white font-bold text-lg">{formatTime(recordingTime)} / 1:00</span>
                 </div>
               </div>
             )}

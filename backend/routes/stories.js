@@ -9,7 +9,7 @@ const router = express.Router();
 // Create a story
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { text, mediaUrl, textOverlay } = req.body;
+    const { text, mediaUrl, textOverlay, durationHours, postType } = req.body;
     const userId = req.user.id;
 
     if (!mediaUrl && !text) {
@@ -19,15 +19,23 @@ router.post('/', authenticateToken, async (req, res) => {
     // Extract tags from text
     const tagNames = extractTags(text || '');
 
-    // Set expiration to 24 hours from now
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // Calculate expiration based on duration (24h, 72h, or permanent)
+    let expiresAt = null;
+    const duration = durationHours || 24; // Default to 24 hours
 
-    // Create story with text overlay data
+    if (duration > 0) {
+      expiresAt = new Date(Date.now() + duration * 60 * 60 * 1000);
+    }
+    // If duration is 0 or null, it's permanent (no expiration)
+
+    const type = postType || 'story'; // Default to 'story'
+
+    // Create story with all fields
     const result = await pool.query(
-      `INSERT INTO stories (user_id, text, media_url, text_overlay, expires_at)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO stories (user_id, text, media_url, text_overlay, expires_at, duration_hours, post_type, is_permanent)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [userId, text, mediaUrl, JSON.stringify(textOverlay || null), expiresAt]
+      [userId, text, mediaUrl, JSON.stringify(textOverlay || null), expiresAt, duration, type, duration === 0]
     );
 
     const story = result.rows[0];
@@ -126,12 +134,17 @@ router.get('/my-stories', authenticateToken, async (req, res) => {
 router.post('/:id/like', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
+    const { reactionType } = req.body;
     const userId = req.user.id;
+    const reaction = reactionType || 'like'; // Default to 'like'
 
-    // Insert like (will fail silently if already liked)
+    // Insert or update reaction
     await pool.query(
-      'INSERT INTO story_likes (user_id, story_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-      [userId, id]
+      `INSERT INTO story_likes (user_id, story_id, reaction_type)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, story_id)
+       DO UPDATE SET reaction_type = $3, created_at = CURRENT_TIMESTAMP`,
+      [userId, id, reaction]
     );
 
     // Update likes count
@@ -153,7 +166,7 @@ router.post('/:id/like', authenticateToken, async (req, res) => {
       );
     }
 
-    res.json({ success: true, likes_count: likesCount });
+    res.json({ success: true, likes_count: likesCount, reaction_type: reaction });
   } catch (error) {
     console.error('Error liking story:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -193,18 +206,22 @@ router.post('/:id/unlike', authenticateToken, async (req, res) => {
   }
 });
 
-// Check if user liked a story
+// Check if user liked a story and get reaction type
 router.get('/:id/liked', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
     const result = await pool.query(
-      'SELECT * FROM story_likes WHERE user_id = $1 AND story_id = $2',
+      'SELECT reaction_type FROM story_likes WHERE user_id = $1 AND story_id = $2',
       [userId, id]
     );
 
-    res.json({ liked: result.rows.length > 0 });
+    const reaction = result.rows[0];
+    res.json({
+      liked: result.rows.length > 0,
+      reactionType: reaction ? reaction.reaction_type : null
+    });
   } catch (error) {
     console.error('Error checking like status:', error);
     res.status(500).json({ error: 'Internal server error' });

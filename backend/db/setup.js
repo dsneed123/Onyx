@@ -106,7 +106,9 @@ async function setupDatabase() {
         view_count INTEGER DEFAULT 0,
         likes_count INTEGER DEFAULT 0,
         is_permanent BOOLEAN DEFAULT FALSE,
-        text_overlay JSONB
+        text_overlay JSONB,
+        duration_hours INTEGER,
+        post_type VARCHAR(20) DEFAULT 'story'
       )
     `);
 
@@ -163,12 +165,13 @@ async function setupDatabase() {
       )
     `);
 
-    // Story likes
+    // Story likes (reactions)
     await onyxClient.query(`
       CREATE TABLE IF NOT EXISTS story_likes (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE,
+        reaction_type VARCHAR(20) DEFAULT 'like',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(user_id, story_id)
       )

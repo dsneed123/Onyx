@@ -13,6 +13,8 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [durationHours, setDurationHours] = useState(24); // 24, 72, or 0 (permanent)
+  const [postType, setPostType] = useState('story'); // 'story' or 'feed'
   const fileInputRef = useRef(null);
   const textRef = useRef(null);
 
@@ -89,7 +91,9 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
           position: textPosition,
           color: textColor,
           fontSize
-        } : null
+        } : null,
+        durationHours: durationHours,
+        postType: postType
       });
 
       onCreated();
@@ -264,6 +268,87 @@ export default function CreateStoryModal({ onClose, onCreated, initialMedia = nu
               )}
             </>
           )}
+
+          {/* Duration & Post Type Selectors */}
+          <div className="mb-6 space-y-4">
+            {/* Duration Selector */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-3">
+                Duration ⏰
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDurationHours(24)}
+                  className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                    durationHours === 24
+                      ? 'bg-gradient-to-r from-onyx-accent to-onyx-purple text-white shadow-glow'
+                      : 'bg-onyx-dark text-gray-400 hover:bg-onyx-light hover:text-white'
+                  }`}
+                >
+                  <div className="text-lg">24h</div>
+                  <div className="text-xs opacity-75">Default</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDurationHours(72)}
+                  className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                    durationHours === 72
+                      ? 'bg-gradient-to-r from-onyx-accent to-onyx-purple text-white shadow-glow'
+                      : 'bg-onyx-dark text-gray-400 hover:bg-onyx-light hover:text-white'
+                  }`}
+                >
+                  <div className="text-lg">72h</div>
+                  <div className="text-xs opacity-75">Extended</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDurationHours(0)}
+                  className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                    durationHours === 0
+                      ? 'bg-gradient-to-r from-onyx-accent to-onyx-purple text-white shadow-glow'
+                      : 'bg-onyx-dark text-gray-400 hover:bg-onyx-light hover:text-white'
+                  }`}
+                >
+                  <div className="text-lg">∞</div>
+                  <div className="text-xs opacity-75">Permanent</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Post Type Selector */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-3">
+                Post To 📍
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPostType('story')}
+                  className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                    postType === 'story'
+                      ? 'bg-gradient-to-r from-onyx-accent to-onyx-purple text-white shadow-glow'
+                      : 'bg-onyx-dark text-gray-400 hover:bg-onyx-light hover:text-white'
+                  }`}
+                >
+                  <div className="text-lg">Stories</div>
+                  <div className="text-xs opacity-75">Swipeable feed</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPostType('feed')}
+                  className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                    postType === 'feed'
+                      ? 'bg-gradient-to-r from-onyx-accent to-onyx-purple text-white shadow-glow'
+                      : 'bg-onyx-dark text-gray-400 hover:bg-onyx-light hover:text-white'
+                  }`}
+                >
+                  <div className="text-lg">Feed</div>
+                  <div className="text-xs opacity-75">Main timeline</div>
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div className="bg-onyx-dark rounded-lg p-4 mb-6">
             <p className="text-gray-400 text-sm">

@@ -21,21 +21,31 @@ export async function runAutoMigration() {
         ALTER TABLE stories
         ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0,
         ADD COLUMN IF NOT EXISTS is_permanent BOOLEAN DEFAULT FALSE,
-        ADD COLUMN IF NOT EXISTS text_overlay JSONB;
+        ADD COLUMN IF NOT EXISTS text_overlay JSONB,
+        ADD COLUMN IF NOT EXISTS duration_hours INTEGER,
+        ADD COLUMN IF NOT EXISTS post_type VARCHAR(20) DEFAULT 'story';
       `);
       console.log('✅ Stories table columns added');
 
-      // Create story_likes table
+      // Create story_likes table with reaction types
       await client.query(`
         CREATE TABLE IF NOT EXISTS story_likes (
           id SERIAL PRIMARY KEY,
           user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
           story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE,
+          reaction_type VARCHAR(20) DEFAULT 'like',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(user_id, story_id)
         );
       `);
       console.log('✅ story_likes table created');
+
+      // Add reaction_type column if it doesn't exist
+      await client.query(`
+        ALTER TABLE story_likes
+        ADD COLUMN IF NOT EXISTS reaction_type VARCHAR(20) DEFAULT 'like';
+      `);
+      console.log('✅ Added reaction_type column to story_likes');
 
       console.log('🎉 Auto-migration completed successfully!');
     } else {
